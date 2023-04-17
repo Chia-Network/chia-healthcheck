@@ -88,16 +88,29 @@ func (h *Healthcheck) websocketReceive(resp *types.WebsocketResponse, err error)
 	log.Printf("recv: %s %s\n", resp.Origin, resp.Command)
 	log.Debugf("origin: %s command: %s destination: %s data: %s\n", resp.Origin, resp.Command, resp.Destination, string(resp.Data))
 
-	if resp.Origin != "chia_full_node" {
-		return
+	switch resp.Origin {
+	case "chia_full_node":
+		h.fullNodeReceive(resp)
+	case "chia_wallet":
+		h.walletReceive(resp)
+	case "chia_crawler":
+		h.crawlerReceive(resp)
+	case "chia_timelord":
+		h.timelordReceive(resp)
+	case "chia_harvester":
+		h.harvesterReceive(resp)
+	case "chia_farmer":
+		h.farmerReceive(resp)
 	}
+}
 
+func (h *Healthcheck) fullNodeReceive(resp *types.WebsocketResponse) {
 	if resp.Command != "block" {
 		return
 	}
 
 	block := &types.BlockEvent{}
-	err = json.Unmarshal(resp.Data, block)
+	err := json.Unmarshal(resp.Data, block)
 	if err != nil {
 		log.Errorf("Error unmarshalling: %s\n", err.Error())
 		return
@@ -106,6 +119,18 @@ func (h *Healthcheck) websocketReceive(resp *types.WebsocketResponse, err error)
 	h.lastHeight = block.Height
 	h.lastHeightTime = time.Now()
 }
+
+func (h *Healthcheck) walletReceive(resp *types.WebsocketResponse) {
+
+}
+
+func (h *Healthcheck) crawlerReceive(resp *types.WebsocketResponse) {}
+
+func (h *Healthcheck) timelordReceive(resp *types.WebsocketResponse) {}
+
+func (h *Healthcheck) harvesterReceive(resp *types.WebsocketResponse) {}
+
+func (h *Healthcheck) farmerReceive(resp *types.WebsocketResponse) {}
 
 func (h *Healthcheck) disconnectHandler() {
 	log.Debug("Calling disconnect handlers")
