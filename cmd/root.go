@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -28,8 +29,10 @@ func Execute() {
 
 func init() {
 	var (
-		hostname        string
-		healthcheckPort int
+		hostname         string
+		healthcheckPort  int
+		healthyThreshold time.Duration
+		logLevel         string
 	)
 
 	cobra.OnInitialize(initConfig)
@@ -37,9 +40,13 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&hostname, "hostname", "localhost", "The hostname to connect to")
 	rootCmd.PersistentFlags().IntVar(&healthcheckPort, "healthcheck-port", 9914, "The port the metrics server binds to")
+	rootCmd.PersistentFlags().DurationVar(&healthyThreshold, "healthcheck-threshold", 5 * time.Minute, "Duration after which the healthchecks will switch to unhealthy")
+	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", "info", "How verbose the logs should be. panic, fatal, error, warn, info, debug, trace")
 
 	cobra.CheckErr(viper.BindPFlag("hostname", rootCmd.PersistentFlags().Lookup("hostname")))
 	cobra.CheckErr(viper.BindPFlag("healthcheck-port", rootCmd.PersistentFlags().Lookup("healthcheck-port")))
+	cobra.CheckErr(viper.BindPFlag("healthcheck-threshold", rootCmd.PersistentFlags().Lookup("healthcheck-threshold")))
+	cobra.CheckErr(viper.BindPFlag("log-level", rootCmd.PersistentFlags().Lookup("log-level")))
 }
 
 // initConfig reads in config file and ENV variables if set.
