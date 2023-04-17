@@ -65,12 +65,6 @@ func (h *Healthcheck) OpenWebsocket() error {
 	return nil
 }
 
-// CloseWebsocket closes the websocket connection
-func (h *Healthcheck) CloseWebsocket() error {
-	//return m.client.DaemonService.CloseConnection()
-	return nil
-}
-
 // StartServer starts the metrics server
 func (h *Healthcheck) StartServer() error {
 	log.Printf("Starting healthcheck server on port %d", h.healthcheckPort)

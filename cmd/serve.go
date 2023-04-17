@@ -28,16 +28,6 @@ var serveCmd = &cobra.Command{
 		// Run this in the background, so the metrics healthz endpoint can come up while waiting for Chia
 		go startWebsocket(h)
 
-		// Close the websocket when the app is closing
-		// @TODO need to actually listen for a signal and call this then, otherwise it doesn't actually get called
-		defer func(h *healthcheck.Healthcheck) {
-			log.Println("App is stopping. Cleaning up...")
-			err := h.CloseWebsocket()
-			if err != nil {
-				log.Printf("Error closing websocket connection: %s\n", err.Error())
-			}
-		}(h)
-
 		log.Fatalln(h.StartServer())
 	},
 }
