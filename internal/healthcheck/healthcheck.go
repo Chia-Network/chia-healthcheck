@@ -14,6 +14,7 @@ import (
 	"github.com/chia-network/go-chia-libs/pkg/types"
 )
 
+// Healthcheck is the main container for the app
 type Healthcheck struct {
 	healthcheckPort uint16
 	client          *rpc.Client
@@ -25,6 +26,7 @@ type Healthcheck struct {
 	lastHeightTime time.Time
 }
 
+// NewHealthcheck returns a new instance of healthcheck
 func NewHealthcheck(port uint16, logLevel log.Level) (*Healthcheck, error) {
 	var err error
 
@@ -121,7 +123,7 @@ func (h *Healthcheck) reconnectHandler() {
 // Healthcheck endpoint for the healthcheck service as a whole
 func (h *Healthcheck) fullNodeHealthcheck() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if time.Now().Sub(h.lastHeightTime) < viper.GetDuration("healthcheck-threshold") {
+		if time.Since(h.lastHeightTime) < viper.GetDuration("healthcheck-threshold") {
 			w.WriteHeader(http.StatusOK)
 			_, err := fmt.Fprintf(w, "Ok")
 			if err != nil {

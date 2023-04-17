@@ -40,7 +40,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&hostname, "hostname", "localhost", "The hostname to connect to")
 	rootCmd.PersistentFlags().IntVar(&healthcheckPort, "healthcheck-port", 9915, "The port the metrics server binds to")
-	rootCmd.PersistentFlags().DurationVar(&healthyThreshold, "healthcheck-threshold", 5 * time.Minute, "Duration after which the healthchecks will switch to unhealthy")
+	rootCmd.PersistentFlags().DurationVar(&healthyThreshold, "healthcheck-threshold", 5*time.Minute, "Duration after which the healthchecks will switch to unhealthy")
 	rootCmd.PersistentFlags().StringVar(&logLevel, "log-level", "info", "How verbose the logs should be. panic, fatal, error, warn, info, debug, trace")
 
 	cobra.CheckErr(viper.BindPFlag("hostname", rootCmd.PersistentFlags().Lookup("hostname")))
