@@ -110,13 +110,16 @@ func (h *Healthcheck) fullNodeReceive(resp *types.WebsocketResponse) {
 		return
 	}
 
+	// Edge case, but we should be sure block height is increasing
+	if block.Height <= h.lastHeight {
+		return
+	}
+
 	h.lastHeight = block.Height
 	h.lastHeightTime = time.Now()
 }
 
-func (h *Healthcheck) walletReceive(resp *types.WebsocketResponse) {
-
-}
+func (h *Healthcheck) walletReceive(resp *types.WebsocketResponse) {}
 
 func (h *Healthcheck) crawlerReceive(resp *types.WebsocketResponse) {}
 
