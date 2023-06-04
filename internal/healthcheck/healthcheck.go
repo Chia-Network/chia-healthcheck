@@ -99,23 +99,26 @@ func (h *Healthcheck) websocketReceive(resp *types.WebsocketResponse, err error)
 }
 
 func (h *Healthcheck) fullNodeReceive(resp *types.WebsocketResponse) {
-	if resp.Command != "block" {
+	var blockHeight uint32
+
+	if resp.Command != "get_blockchain_state" {
 		return
 	}
 
-	block := &types.BlockEvent{}
+	block := &types.WebsocketBlockchainState{}
 	err := json.Unmarshal(resp.Data, block)
 	if err != nil {
 		log.Errorf("Error unmarshalling: %s\n", err.Error())
 		return
 	}
+	blockHeight = block.BlockchainState.Peak.OrEmpty().Height
 
 	// Edge case, but we should be sure block height is increasing
-	if block.Height <= h.lastHeight {
+	if blockHeight <= h.lastHeight {
 		return
 	}
 
-	h.lastHeight = block.Height
+	h.lastHeight = blockHeight
 	h.lastHeightTime = time.Now()
 }
 
