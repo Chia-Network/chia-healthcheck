@@ -15,6 +15,7 @@ import (
 func (h *Healthcheck) DNSCheckLoop() {
 	hostname := viper.GetString("dns-hostname")
 	if len(hostname) == 0 {
+		log.Println("dns-hostname not set. Skipping DNS Monitoring")
 		return
 	}
 
