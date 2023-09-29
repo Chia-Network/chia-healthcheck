@@ -24,6 +24,9 @@ type Healthcheck struct {
 
 	// Time we received the last block height
 	lastHeightTime time.Time
+
+	// dnsOK Are we currently serving DNS responses?
+	dnsOK bool
 }
 
 // NewHealthcheck returns a new instance of healthcheck
@@ -32,6 +35,7 @@ func NewHealthcheck(port uint16, logLevel log.Level) (*Healthcheck, error) {
 
 	healthcheck := &Healthcheck{
 		healthcheckPort: port,
+		dnsOK:           false,
 	}
 
 	log.SetLevel(logLevel)
@@ -70,6 +74,7 @@ func (h *Healthcheck) StartServer() error {
 	log.Printf("Starting healthcheck server on port %d", h.healthcheckPort)
 
 	http.HandleFunc("/full_node", h.fullNodeHealthcheck())
+	http.HandleFunc("/seeder", h.seederHealthcheck())
 	return http.ListenAndServe(fmt.Sprintf(":%d", h.healthcheckPort), nil)
 }
 
@@ -145,7 +150,7 @@ func (h *Healthcheck) reconnectHandler() {
 	}
 }
 
-// Healthcheck endpoint for the healthcheck service as a whole
+// Healthcheck endpoint for the full node service as a whole
 func (h *Healthcheck) fullNodeHealthcheck() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if time.Since(h.lastHeightTime) < viper.GetDuration("healthcheck-threshold") {
