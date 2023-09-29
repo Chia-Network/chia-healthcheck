@@ -44,9 +44,9 @@ sudo apt-get install chia-healthcheck
 
 First, install [chia-blockchain](https://github.com/Chia-Network/chia-blockchain). Chia healthcheck expects to be run on the same machine as the chia blockchain installation, and will use either the default chia config (`~/.chia/mainnet/`) or else the config located at `CHIA_ROOT`, if the environment variable is set.
 
-`chia-healthcheck serve` will start the healthcheck service on the default port of `9915`.
+`chia-healthcheck serve` will start the healthcheck service on the default port of `9950`.
 
-You can check the status of the full node at `<hostname>:9915/full_node`. A response code `200` indicates the full node is receiving new blocks, while a response code of `500` would indicate that a new block has not been received within the healthcheck interval (5 minutes by default).
+You can check the status of the full node at `<hostname>:9950/full_node`. A response code `200` indicates the full node is receiving new blocks, while a response code of `500` would indicate that a new block has not been received within the healthcheck interval (5 minutes by default).
 
 ### Configuration
 
@@ -57,5 +57,5 @@ To set a config value as an environment variable, prefix the name with `CHIA_HEA
 To use a config file, create a new yaml file and place any configuration options you want to specify in the file. The config file will be loaded by default from `~/.chia-healthcheck.yaml`, but the location can be overridden with the `--config` flag.
 
 ```yaml
-healthcheck-port: 9915
+healthcheck-port: 9950
 ```
