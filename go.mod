@@ -3,7 +3,7 @@ module github.com/chia-network/chia-healthcheck
 go 1.19
 
 require (
-	github.com/chia-network/go-chia-libs v0.3.1
+	github.com/chia-network/go-chia-libs v0.5.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
