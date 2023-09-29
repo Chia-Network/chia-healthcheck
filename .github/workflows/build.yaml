@@ -17,7 +17,7 @@ jobs:
         GOOS: ["linux", "darwin", "windows"]
         GOARCH: ["amd64", "arm64"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Build Binary
         env:
@@ -73,7 +73,7 @@ jobs:
       - installers
     if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v3
         with:

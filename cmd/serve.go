@@ -27,6 +27,7 @@ var serveCmd = &cobra.Command{
 
 		// Run this in the background, so the metrics healthz endpoint can come up while waiting for Chia
 		go startWebsocket(h)
+		go h.DNSCheckLoop()
 
 		log.Fatalln(h.StartServer())
 	},
