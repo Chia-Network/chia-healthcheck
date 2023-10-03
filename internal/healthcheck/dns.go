@@ -2,7 +2,6 @@ package healthcheck
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -34,18 +33,16 @@ func (h *Healthcheck) DNSCheckLoop() {
 			ips, err := r.LookupIP(context.TODO(), "ip", hostname)
 			if err != nil {
 				log.Printf("Fetching dns records failed: %s\n", err.Error())
-				h.dnsOK = false
 				return
 			}
 
 			if len(ips) > 0 {
 				log.Println("Received at least 1 IP. Ready!")
-				h.dnsOK = true
+				h.lastDNSTime = time.Now()
 				return
 			}
 
 			log.Println("Received NO IPs. Not Ready!")
-			h.dnsOK = false
 		}()
 
 		time.Sleep(30 * time.Second)
@@ -55,18 +52,6 @@ func (h *Healthcheck) DNSCheckLoop() {
 // seederHealthcheck endpoint for the seeder service as a whole (Are we sending DNS responses)
 func (h *Healthcheck) seederHealthcheck() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if h.dnsOK {
-			w.WriteHeader(http.StatusOK)
-			_, err := fmt.Fprintf(w, "Ok")
-			if err != nil {
-				log.Errorf("Error writing healthcheck response %s\n", err.Error())
-			}
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-			_, err := fmt.Fprintf(w, "Not OK")
-			if err != nil {
-				log.Errorf("Error writing healthcheck response %s\n", err.Error())
-			}
-		}
+		timeMetricHealthcheckHelper(h.lastDNSTime, w, r)
 	}
 }

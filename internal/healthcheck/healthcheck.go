@@ -1,7 +1,6 @@
 package healthcheck
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -25,8 +24,8 @@ type Healthcheck struct {
 	// Time we received the last block height
 	lastHeightTime time.Time
 
-	// dnsOK Are we currently serving DNS responses?
-	dnsOK bool
+	// Last time we got a successful DNS response
+	lastDNSTime time.Time
 }
 
 // NewHealthcheck returns a new instance of healthcheck
@@ -35,7 +34,6 @@ func NewHealthcheck(port uint16, logLevel log.Level) (*Healthcheck, error) {
 
 	healthcheck := &Healthcheck{
 		healthcheckPort: port,
-		dnsOK:           false,
 	}
 
 	log.SetLevel(logLevel)
@@ -103,30 +101,6 @@ func (h *Healthcheck) websocketReceive(resp *types.WebsocketResponse, err error)
 	}
 }
 
-func (h *Healthcheck) fullNodeReceive(resp *types.WebsocketResponse) {
-	var blockHeight uint32
-
-	if resp.Command != "get_blockchain_state" {
-		return
-	}
-
-	block := &types.WebsocketBlockchainState{}
-	err := json.Unmarshal(resp.Data, block)
-	if err != nil {
-		log.Errorf("Error unmarshalling: %s\n", err.Error())
-		return
-	}
-	blockHeight = block.BlockchainState.Peak.OrEmpty().Height
-
-	// Edge case, but we should be sure block height is increasing
-	if blockHeight <= h.lastHeight {
-		return
-	}
-
-	h.lastHeight = blockHeight
-	h.lastHeightTime = time.Now()
-}
-
 func (h *Healthcheck) walletReceive(resp *types.WebsocketResponse) {}
 
 func (h *Healthcheck) crawlerReceive(resp *types.WebsocketResponse) {}
@@ -150,21 +124,19 @@ func (h *Healthcheck) reconnectHandler() {
 	}
 }
 
-// Healthcheck endpoint for the full node service as a whole
-func (h *Healthcheck) fullNodeHealthcheck() func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if time.Since(h.lastHeightTime) < viper.GetDuration("healthcheck-threshold") {
-			w.WriteHeader(http.StatusOK)
-			_, err := fmt.Fprintf(w, "Ok")
-			if err != nil {
-				log.Errorf("Error writing healthcheck response %s\n", err.Error())
-			}
-		} else {
-			w.WriteHeader(http.StatusInternalServerError)
-			_, err := fmt.Fprintf(w, "Not OK")
-			if err != nil {
-				log.Errorf("Error writing healthcheck response %s\n", err.Error())
-			}
+func timeMetricHealthcheckHelper(lastTime time.Time, w http.ResponseWriter, r *http.Request) {
+	if time.Since(lastTime) < viper.GetDuration("healthcheck-threshold") {
+		w.WriteHeader(http.StatusOK)
+		_, err := fmt.Fprintf(w, "Ok")
+		if err != nil {
+			log.Errorf("Error writing healthcheck response %s\n", err.Error())
+		}
+	} else {
+		w.WriteHeader(http.StatusInternalServerError)
+		_, err := fmt.Fprintf(w, "Not OK")
+		if err != nil {
+			log.Errorf("Error writing healthcheck response %s\n", err.Error())
 		}
 	}
 }
+
