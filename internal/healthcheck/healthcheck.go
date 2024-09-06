@@ -141,4 +141,3 @@ func timeMetricHealthcheckHelper(lastTime time.Time, w http.ResponseWriter, r *h
 		}
 	}
 }
-
