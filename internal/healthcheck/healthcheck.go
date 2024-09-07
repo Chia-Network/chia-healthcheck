@@ -26,6 +26,9 @@ type Healthcheck struct {
 
 	// Last time we got a successful DNS response
 	lastDNSTime time.Time
+
+	// Time we got a good response from the timelord
+	lastTimelordTime time.Time
 }
 
 // NewHealthcheck returns a new instance of healthcheck
@@ -73,6 +76,7 @@ func (h *Healthcheck) StartServer() error {
 
 	http.HandleFunc("/full_node", h.fullNodeHealthcheck())
 	http.HandleFunc("/seeder", h.seederHealthcheck())
+	http.HandleFunc("/timelord", h.timelordHealthcheck())
 	return http.ListenAndServe(fmt.Sprintf(":%d", h.healthcheckPort), nil)
 }
 
@@ -104,8 +108,6 @@ func (h *Healthcheck) websocketReceive(resp *types.WebsocketResponse, err error)
 func (h *Healthcheck) walletReceive(resp *types.WebsocketResponse) {}
 
 func (h *Healthcheck) crawlerReceive(resp *types.WebsocketResponse) {}
-
-func (h *Healthcheck) timelordReceive(resp *types.WebsocketResponse) {}
 
 func (h *Healthcheck) harvesterReceive(resp *types.WebsocketResponse) {}
 
@@ -139,4 +141,3 @@ func timeMetricHealthcheckHelper(lastTime time.Time, w http.ResponseWriter, r *h
 		}
 	}
 }
-
