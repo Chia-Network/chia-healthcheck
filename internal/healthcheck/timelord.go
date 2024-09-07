@@ -19,7 +19,7 @@ func (h *Healthcheck) timelordReceive(resp *types.WebsocketResponse) {
 	}
 }
 
-// timelordHealthcheck endpoint for the timelord service as a whole (Are we sending DNS responses)
+// timelordHealthcheck endpoint for the timelord service as a whole
 func (h *Healthcheck) timelordHealthcheck() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		timeMetricHealthcheckHelper(h.lastTimelordTime, w, r)
