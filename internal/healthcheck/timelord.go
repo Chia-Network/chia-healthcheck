@@ -14,13 +14,12 @@ func (h *Healthcheck) timelordReceive(resp *types.WebsocketResponse) {
 		h.lastTimelordTime = time.Now()
 	case "skipping_peak":
 		// Fastest timelord
-		h.lastTimelordTime = time.Now()
 	case "new_peak":
-		// Slowest Timelord
+		// Not Fastest Timelord
 	}
 }
 
-// seederHealthcheck endpoint for the seeder service as a whole (Are we sending DNS responses)
+// timelordHealthcheck endpoint for the timelord service as a whole (Are we sending DNS responses)
 func (h *Healthcheck) timelordHealthcheck() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		timeMetricHealthcheckHelper(h.lastTimelordTime, w, r)
