@@ -50,9 +50,9 @@ func init() {
 }
 
 func startWebsocket(h *healthcheck.Healthcheck) error {
-		err := h.OpenWebsocket()
-		if err != nil {
-			return err
-		}
-		return nil
+	err := h.OpenWebsocket()
+	if err != nil {
+		return err
+	}
+	return nil
 }
