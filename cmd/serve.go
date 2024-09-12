@@ -37,9 +37,10 @@ var serveCmd = &cobra.Command{
 				continue
 			}
 
-			go h.DNSCheckLoop()
 			break
 		}
+
+		go h.DNSCheckLoop()
 
 		log.Fatalln(h.StartServer())
 	},
