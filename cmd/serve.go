@@ -20,13 +20,26 @@ var serveCmd = &cobra.Command{
 			log.Fatalf("Error parsing log level: %s\n", err.Error())
 		}
 
-		h, err := healthcheck.NewHealthcheck(uint16(viper.GetInt("healthcheck-port")), level)
-		if err != nil {
-			log.Fatalln(err.Error())
+		var h *healthcheck.Healthcheck
+
+		// Loop until we get a connection or cancel
+		// It just retries every 5 seconds to connect to the RPC server until it succeeds or the app is stopped
+		for {
+			h, err = healthcheck.NewHealthcheck(uint16(viper.GetInt("healthcheck-port")), level)
+			if err != nil {
+				log.Fatalln(err.Error())
+			}
+
+			err = startWebsocket(h)
+			if err != nil {
+				log.Printf("error starting websocket. Creating new client and trying again in 5 seconds: %s\n", err.Error())
+				time.Sleep(5 * time.Second)
+				continue
+			}
+
+			break
 		}
 
-		// Run this in the background, so the metrics healthz endpoint can come up while waiting for Chia
-		go startWebsocket(h)
 		go h.DNSCheckLoop()
 
 		log.Fatalln(h.StartServer())
@@ -37,17 +50,10 @@ func init() {
 	rootCmd.AddCommand(serveCmd)
 }
 
-func startWebsocket(h *healthcheck.Healthcheck) {
-	// Loop until we get a connection or cancel
-	// This enables starting the healthcheck app even if the chia RPC service is not up/responding
-	// It just retries every 5 seconds to connect to the RPC server until it succeeds or the app is stopped
-	for {
-		err := h.OpenWebsocket()
-		if err != nil {
-			log.Println(err.Error())
-			time.Sleep(5 * time.Second)
-			continue
-		}
-		break
+func startWebsocket(h *healthcheck.Healthcheck) error {
+	err := h.OpenWebsocket()
+	if err != nil {
+		return err
 	}
+	return nil
 }
