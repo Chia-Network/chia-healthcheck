@@ -120,9 +120,10 @@ jobs:
             $TAG_NAME \
             artifacts/installer-chia-healthcheck*/*.deb
 
-      - uses: Chia-Network/actions/github/jwt@main
-
       - name: Trigger apt repo update
-        run: |
-          curl -s -XPOST -H "Authorization: Bearer ${{ env.JWT_TOKEN }}" --data '{"release_version":"${{ steps.tag-name.outputs.TAG_NAME }}"}' ${{ secrets.GLUE_API_URL }}/api/v1/chia-healthcheck/${{ github.sha }}/start
-          curl -s -XPOST -H "Authorization: Bearer ${{ env.JWT_TOKEN }}" --data '{"release_version":"${{ steps.tag-name.outputs.TAG_NAME }}"}' ${{ secrets.GLUE_API_URL }}/api/v1/chia-healthcheck/${{ github.sha }}/success/deploy
+        uses: Chia-Network/actions/github/glue@main
+        with:
+          json_data: '{"release_version":"${{ steps.tag-name.outputs.TAG_NAME }}"}'
+          glue_url: ${{ secrets.GLUE_API_URL }}
+          glue_project: "chia-healthcheck"
+          glue_path: "trigger"
