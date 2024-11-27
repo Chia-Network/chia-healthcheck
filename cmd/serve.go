@@ -41,6 +41,7 @@ var serveCmd = &cobra.Command{
 		}
 
 		go h.DNSCheckLoop()
+		go h.FullNodeCheckLoop()
 
 		log.Fatalln(h.StartServer())
 	},
