@@ -1,6 +1,6 @@
 module github.com/chia-network/chia-healthcheck
 
-go 1.19
+go 1.21
 
 require (
 	github.com/chia-network/go-chia-libs v0.6.0

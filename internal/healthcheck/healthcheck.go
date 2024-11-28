@@ -2,10 +2,12 @@ package healthcheck
 
 import (
 	"fmt"
+	"net"
 	"net/http"
 	"net/url"
 	"time"
 
+	"github.com/chia-network/go-chia-libs/pkg/config"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 
@@ -17,6 +19,7 @@ import (
 type Healthcheck struct {
 	healthcheckPort uint16
 	client          *rpc.Client
+	chiaConfig      *config.ChiaConfig
 
 	// Last block height we received
 	lastHeight uint32
@@ -24,8 +27,13 @@ type Healthcheck struct {
 	// Time we received the last block height
 	lastHeightTime time.Time
 
+	// Last full node activity
+	lastFullNodeActivity time.Time
+
 	// Last time we got a successful DNS response
 	lastDNSTime time.Time
+	// Last time we got a successful DNS response with at least one peer
+	lastDNSTimeGT1 time.Time
 
 	// Time we got a good response from the timelord
 	lastTimelordTime time.Time
@@ -41,7 +49,12 @@ func NewHealthcheck(port uint16, logLevel log.Level) (*Healthcheck, error) {
 
 	log.SetLevel(logLevel)
 
-	healthcheck.client, err = rpc.NewClient(rpc.ConnectionModeWebsocket, rpc.WithAutoConfig(), rpc.WithBaseURL(&url.URL{
+	chiaConfig, err := config.GetChiaConfig()
+	if err != nil {
+		return nil, err
+	}
+	healthcheck.chiaConfig = chiaConfig
+	healthcheck.client, err = rpc.NewClient(rpc.ConnectionModeWebsocket, rpc.WithManualConfig(*chiaConfig), rpc.WithBaseURL(&url.URL{
 		Scheme: "wss",
 		Host:   viper.GetString("hostname"),
 	}))
@@ -75,8 +88,11 @@ func (h *Healthcheck) StartServer() error {
 	log.Printf("Starting healthcheck server on port %d", h.healthcheckPort)
 
 	http.HandleFunc("/full_node", h.fullNodeHealthcheck())
+	http.HandleFunc("/full_node/readiness", h.fullNodeReadiness())
 	http.HandleFunc("/seeder", h.seederHealthcheck())
+	http.HandleFunc("/seeder/readiness", h.seederReadiness())
 	http.HandleFunc("/timelord", h.timelordHealthcheck())
+	http.HandleFunc("/timelord/readiness", h.timelordHealthcheck())
 	return http.ListenAndServe(fmt.Sprintf(":%d", h.healthcheckPort), nil)
 }
 
@@ -140,4 +156,15 @@ func timeMetricHealthcheckHelper(lastTime time.Time, w http.ResponseWriter, r *h
 			log.Errorf("Error writing healthcheck response %s\n", err.Error())
 		}
 	}
+}
+
+func isPortOpen(host string, port uint16) bool {
+	address := fmt.Sprintf("%s:%d", host, port)
+	conn, err := net.DialTimeout("tcp", address, 5*time.Second)
+	if err != nil {
+		// Port is not open or the host is unreachable
+		return false
+	}
+	_ = conn.Close()
+	return true
 }

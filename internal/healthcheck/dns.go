@@ -45,12 +45,18 @@ func (h *Healthcheck) DNSCheckLoop() {
 			log.Println("Received NO IPs. Not Ready!")
 		}()
 
-		time.Sleep(30 * time.Second)
+		time.Sleep(min(30*time.Second, viper.GetDuration("healthcheck-threshold")/2))
 	}
 }
 
 // seederHealthcheck endpoint for the seeder service as a whole (Are we sending DNS responses)
 func (h *Healthcheck) seederHealthcheck() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		timeMetricHealthcheckHelper(h.lastDNSTimeGT1, w, r)
+	}
+}
+
+func (h *Healthcheck) seederReadiness() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		timeMetricHealthcheckHelper(h.lastDNSTime, w, r)
 	}
