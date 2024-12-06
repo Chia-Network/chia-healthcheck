@@ -36,9 +36,12 @@ func (h *Healthcheck) DNSCheckLoop() {
 				return
 			}
 
+			t := time.Now()
+			h.lastDNSTime = t
+
 			if len(ips) > 0 {
 				log.Println("Received at least 1 IP. Ready!")
-				h.lastDNSTime = time.Now()
+				h.lastDNSTimeGT1 = t
 				return
 			}
 
