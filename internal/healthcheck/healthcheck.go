@@ -72,7 +72,7 @@ func (h *Healthcheck) OpenWebsocket() error {
 		return err
 	}
 
-	err = h.client.AddHandler(h.websocketReceive)
+	_, err = h.client.AddHandler(h.websocketReceive)
 	if err != nil {
 		return err
 	}
