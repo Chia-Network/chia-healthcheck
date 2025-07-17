@@ -21,6 +21,9 @@ type Healthcheck struct {
 	client          *rpc.Client
 	chiaConfig      *config.ChiaConfig
 
+	// Last time the full node was synced
+	lastSyncedTime time.Time
+
 	// Last block height we received
 	lastHeight uint32
 
@@ -88,7 +91,9 @@ func (h *Healthcheck) StartServer() error {
 	log.Printf("Starting healthcheck server on port %d", h.healthcheckPort)
 
 	http.HandleFunc("/full_node", h.fullNodeHealthcheck())
+	http.HandleFunc("/full_node/startup", h.fullNodeStartup())
 	http.HandleFunc("/full_node/readiness", h.fullNodeReadiness())
+	http.HandleFunc("/full_node/liveness", h.fullNodeLiveness())
 	http.HandleFunc("/seeder", h.seederHealthcheck())
 	http.HandleFunc("/seeder/readiness", h.seederReadiness())
 	http.HandleFunc("/timelord", h.timelordHealthcheck())
