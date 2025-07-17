@@ -31,6 +31,10 @@ func (h *Healthcheck) fullNodeReceive(resp *types.WebsocketResponse) {
 		return
 	}
 
+	if block.BlockchainState.Sync.Synced {
+		h.lastSyncedTime = time.Now()
+	}
+
 	h.lastHeight = blockHeight
 	h.lastHeightTime = time.Now()
 }
@@ -62,9 +66,23 @@ func (h *Healthcheck) fullNodeHealthcheck() func(http.ResponseWriter, *http.Requ
 	}
 }
 
-// Healthcheck endpoint for the full node service as a whole
+// Startup endpoint will be successful when the full node is running and the peak height is increasing
+func (h *Healthcheck) fullNodeStartup() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		timeMetricHealthcheckHelper(h.lastHeightTime, w, r)
+	}
+}
+
+// Readiness endpoint will be successful when the full node is synced
 func (h *Healthcheck) fullNodeReadiness() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		timeMetricHealthcheckHelper(h.lastFullNodeActivity, w, r)
+		timeMetricHealthcheckHelper(h.lastSyncedTime, w, r)
+	}
+}
+
+// Liveness endpoint will be successful when the full node is running and the peak height is increasing
+func (h *Healthcheck) fullNodeLiveness() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		timeMetricHealthcheckHelper(h.lastHeightTime, w, r)
 	}
 }
