@@ -94,6 +94,7 @@ func (h *Healthcheck) StartServer() error {
 	http.HandleFunc("/full_node/startup", h.fullNodeStartup())
 	http.HandleFunc("/full_node/readiness", h.fullNodeReadiness())
 	http.HandleFunc("/full_node/liveness", h.fullNodeLiveness())
+	http.HandleFunc("/full_node/ports", h.fullNodePorts())
 	http.HandleFunc("/seeder", h.seederHealthcheck())
 	http.HandleFunc("/seeder/readiness", h.seederReadiness())
 	http.HandleFunc("/timelord", h.timelordHealthcheck())
