@@ -59,3 +59,19 @@ To use a config file, create a new yaml file and place any configuration options
 ```yaml
 healthcheck-port: 9950
 ```
+
+## Healthcheck Endpoints
+
+This is the comprehensive list of endpoints currently available for Chia healthchecking purposes by this service.
+
+* `/full_node` - Checks that the local full_node sync height is increasing.
+* `/full_node/startup` - Checks that the local full_node sync height is increasing.
+* `/full_node/liveness` - Checks that the local full_node sync height is increasing.
+* `/full_node/readiness` - Checks that the local full_node is synced to the full chain.
+* `/full_node/ports` - Checks that the full_node peer and RPC ports are bound.
+* `/seeder` - Checks the local seeder and ensures the resolver responds with at least one peer IP address.
+* `/seeder/readiness` - Checks the local seeder and ensures the resolver responds.
+* `/timelord` - Checks the local timelord and ensures it is finishing proofs of time.
+* `/timelord/readiness` - Checks the local timelord and ensures it is finishing proofs of time.
+
+Other Chia components and endpoints may be added to this list over time.

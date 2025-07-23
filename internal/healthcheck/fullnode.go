@@ -86,3 +86,10 @@ func (h *Healthcheck) fullNodeLiveness() func(http.ResponseWriter, *http.Request
 		timeMetricHealthcheckHelper(h.lastHeightTime, w, r)
 	}
 }
+
+// Ports endpoint will be successful when the full node peer and RPC ports are listening on the host
+func (h *Healthcheck) fullNodePorts() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		timeMetricHealthcheckHelper(h.lastFullNodeActivity, w, r)
+	}
+}
