@@ -165,7 +165,7 @@ func timeMetricHealthcheckHelper(lastTime time.Time, w http.ResponseWriter, r *h
 }
 
 func isPortOpen(host string, port uint16) bool {
-	address := fmt.Sprintf("%s:%d", host, port)
+	address := net.JoinHostPort(host, fmt.Sprintf("%d", port))
 	conn, err := net.DialTimeout("tcp", address, 5*time.Second)
 	if err != nil {
 		// Port is not open or the host is unreachable
