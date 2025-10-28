@@ -32,7 +32,7 @@ jobs:
         run: make build
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: chia-healthcheck-${{ matrix.GOOS }}-${{ matrix.GOARCH }}
           path: ${{ github.workspace }}/bin/chia-healthcheck*
@@ -68,7 +68,7 @@ jobs:
           mv *.deb installer-out/
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: installer-chia-healthcheck-${{ matrix.GOOS }}-${{ matrix.GOARCH }}
           path: ${{ github.workspace }}/installer-out/*.deb
