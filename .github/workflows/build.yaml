@@ -49,7 +49,7 @@ jobs:
       - name: Install fpm
         run: sudo gem install fpm
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           name: chia-healthcheck-${{ matrix.GOOS }}-${{ matrix.GOARCH }}
           path: artifacts
@@ -81,7 +81,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v6
         with:
           path: artifacts
 
