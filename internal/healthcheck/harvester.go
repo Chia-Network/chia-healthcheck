@@ -21,12 +21,21 @@ func (h *Healthcheck) harvesterReceive(resp *types.WebsocketResponse) {
 		return
 	}
 
+	h.lastHarvesterTime = time.Now()
+
 	if farmingInfo.TotalPlots == 0 {
 		log.Errorf("No plots found. Not Ready!")
 		return
 	}
 
-	h.lastHarvesterTime = time.Now()
+	h.lastHarvesterTimeWithPlots = time.Now()
+}
+
+// harvesterHealthcheck endpoint for the harvester service as a whole
+func (h *Healthcheck) harvesterHealthcheckWithPlots() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		timeMetricHealthcheckHelper(h.lastHarvesterTimeWithPlots, w, r)
+	}
 }
 
 // timelordHealthcheck endpoint for the timelord service as a whole

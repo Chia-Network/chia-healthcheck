@@ -41,8 +41,11 @@ type Healthcheck struct {
 	// Time we got a good response from the timelord
 	lastTimelordTime time.Time
 
-	// Last time harvester looked for plots eligible to farm AND had > 0 plots
+	// Last time harvester looked for plots eligible to farm
 	lastHarvesterTime time.Time
+
+	// Last time harvester looked for plots eligible to farm AND had > 0 plots
+	lastHarvesterTimeWithPlots time.Time
 }
 
 // NewHealthcheck returns a new instance of healthcheck
@@ -103,6 +106,7 @@ func (h *Healthcheck) StartServer() error {
 	http.HandleFunc("/timelord", h.timelordHealthcheck())
 	http.HandleFunc("/timelord/readiness", h.timelordHealthcheck())
 	http.HandleFunc("/harvester", h.harvesterHealthcheck())
+	http.HandleFunc("/harvester/with-plots", h.harvesterHealthcheckWithPlots())
 	return http.ListenAndServe(fmt.Sprintf(":%d", h.healthcheckPort), nil)
 }
 
