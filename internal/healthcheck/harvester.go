@@ -31,14 +31,14 @@ func (h *Healthcheck) harvesterReceive(resp *types.WebsocketResponse) {
 	h.lastHarvesterTimeWithPlots = time.Now()
 }
 
-// harvesterHealthcheck endpoint for the harvester service as a whole
+// harvesterHealthcheckWithPlots endpoint for the harvester service requiring that at least one plot is found
 func (h *Healthcheck) harvesterHealthcheckWithPlots() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		timeMetricHealthcheckHelper(h.lastHarvesterTimeWithPlots, w, r)
 	}
 }
 
-// timelordHealthcheck endpoint for the timelord service as a whole
+// harvesterHealthcheck endpoint for the harvester service as a whole
 func (h *Healthcheck) harvesterHealthcheck() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		timeMetricHealthcheckHelper(h.lastHarvesterTime, w, r)
