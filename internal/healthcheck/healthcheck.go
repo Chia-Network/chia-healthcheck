@@ -40,6 +40,15 @@ type Healthcheck struct {
 
 	// Time we got a good response from the timelord
 	lastTimelordTime time.Time
+
+	// Last time the farmer received new SP info from the full node
+	lastFarmerTime time.Time
+
+	// Last time harvester looked for plots eligible to farm
+	lastHarvesterTime time.Time
+
+	// Last time harvester looked for plots eligible to farm AND had > 0 plots
+	lastHarvesterTimeWithPlots time.Time
 }
 
 // NewHealthcheck returns a new instance of healthcheck
@@ -99,6 +108,9 @@ func (h *Healthcheck) StartServer() error {
 	http.HandleFunc("/seeder/readiness", h.seederReadiness())
 	http.HandleFunc("/timelord", h.timelordHealthcheck())
 	http.HandleFunc("/timelord/readiness", h.timelordHealthcheck())
+	http.HandleFunc("/farmer", h.farmerHealthcheck())
+	http.HandleFunc("/harvester", h.harvesterHealthcheck())
+	http.HandleFunc("/harvester/with-plots", h.harvesterHealthcheckWithPlots())
 	return http.ListenAndServe(fmt.Sprintf(":%d", h.healthcheckPort), nil)
 }
 
@@ -130,10 +142,6 @@ func (h *Healthcheck) websocketReceive(resp *types.WebsocketResponse, err error)
 func (h *Healthcheck) walletReceive(resp *types.WebsocketResponse) {}
 
 func (h *Healthcheck) crawlerReceive(resp *types.WebsocketResponse) {}
-
-func (h *Healthcheck) harvesterReceive(resp *types.WebsocketResponse) {}
-
-func (h *Healthcheck) farmerReceive(resp *types.WebsocketResponse) {}
 
 func (h *Healthcheck) disconnectHandler() {
 	log.Debug("Calling disconnect handlers")
