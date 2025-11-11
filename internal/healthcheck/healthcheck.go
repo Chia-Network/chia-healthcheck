@@ -99,6 +99,7 @@ func (h *Healthcheck) OpenWebsocket() error {
 func (h *Healthcheck) StartServer() error {
 	log.Printf("Starting healthcheck server on port %d", h.healthcheckPort)
 
+	http.HandleFunc("/healthz", returnOk)
 	http.HandleFunc("/full_node", h.fullNodeHealthcheck())
 	http.HandleFunc("/full_node/startup", h.fullNodeStartup())
 	http.HandleFunc("/full_node/readiness", h.fullNodeReadiness())
@@ -153,6 +154,14 @@ func (h *Healthcheck) reconnectHandler() {
 	err := h.client.Subscribe("metrics")
 	if err != nil {
 		log.Errorf("Error subscribing to metrics events: %s\n", err.Error())
+	}
+}
+
+func returnOk(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	_, err := fmt.Fprintf(w, "Ok")
+	if err != nil {
+		log.Errorf("Error writing healthcheck response %s\n", err.Error())
 	}
 }
 
