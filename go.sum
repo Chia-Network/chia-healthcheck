@@ -1,5 +1,5 @@
-github.com/chia-network/go-chia-libs v0.24.2 h1:1CHvXWLnjPCOeiX6j7OFHtmOqRY6ePfm27dTaBhy0e4=
-github.com/chia-network/go-chia-libs v0.24.2/go.mod h1:TYbjGcYWkFTJOFX0//xVHkToZ4Gs1qtZfDXArgnsiJc=
+github.com/chia-network/go-chia-libs v1.0.0 h1:YygSJOoal0XwofaG3HLYSG3ul3Qw3LjQtDqdpBFl5Jw=
+github.com/chia-network/go-chia-libs v1.0.0/go.mod h1:TYbjGcYWkFTJOFX0//xVHkToZ4Gs1qtZfDXArgnsiJc=
 github.com/cpuguy83/go-md2man/v2 v2.0.6/go.mod h1:oOW0eioCTA6cOiMLiUPZOpcVxMig6NIQQ7OS05n1F4g=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
