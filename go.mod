@@ -3,7 +3,7 @@ module github.com/chia-network/chia-healthcheck
 go 1.24.0
 
 require (
-	github.com/chia-network/go-chia-libs v1.3.2
+	github.com/chia-network/go-chia-libs v1.3.3
 	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
@@ -19,7 +19,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
-	github.com/samber/mo v1.16.0 // indirect
+	github.com/samber/mo v1.17.0 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
 	github.com/spf13/cast v1.10.0 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
